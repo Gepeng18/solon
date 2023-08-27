@@ -20,7 +20,7 @@ public abstract class AbstractJobManager implements IJobManager {
     protected Map<String, JobHolder> jobMap = new HashMap<>();
 
     /**
-     * 任务添加
+     * 任务添加到jobMap中，然后启动job任务
      */
     @Override
     public JobHolder jobAdd(String name, Scheduled scheduled, JobHandler handler) {
