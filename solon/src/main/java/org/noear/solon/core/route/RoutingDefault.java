@@ -6,6 +6,7 @@ import org.noear.solon.core.util.PathAnalyzer;
 
 /**
  * 路由默认实现
+ * 一个本类对应一个mapping
  *
  * @author noear
  * @since 1.3

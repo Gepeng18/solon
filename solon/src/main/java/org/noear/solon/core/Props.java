@@ -355,8 +355,10 @@ public class Props extends Properties {
                 if (keyStr.startsWith(key2)) {
                     String key = keyStr.substring(idx2);
 
+                    // 添加一个原始数据
                     setFun.accept(key, (String) v);
 
+                    // 添加一个驼峰后的数据
                     if (key.contains("-")) {
                         String camelKey = buildCamelKey(key);
                         setFun.accept(camelKey, (String) v);
@@ -371,8 +373,10 @@ public class Props extends Properties {
      */
     @Override
     public synchronized void forEach(BiConsumer<? super Object, ? super Object> action) {
+        // 1、先forEach父类
         super.forEach(action);
 
+        // 2、再forEach父类没有，而defaults有的
         if (defaults != null) {
             defaults.forEach((k, v) -> {
                 if (super.containsKey(k) == false) {
@@ -537,7 +541,7 @@ public class Props extends Properties {
     }
 
     /**
-     * 将 - 转为小驼峰key
+     * 将 包含 - 的 key 转为小驼峰key， 如 my-sh 变成 mySh
      */
     private String buildCamelKey(String key) {
         String[] ss = key.split("-");

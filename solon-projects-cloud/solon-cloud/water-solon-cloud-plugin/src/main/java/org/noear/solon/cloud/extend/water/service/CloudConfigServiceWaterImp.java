@@ -83,6 +83,7 @@ public class CloudConfigServiceWaterImp extends TimerTask implements CloudConfig
             }
         }
 
+        // 感觉像顺序更新？
         ConfigM cfg = WaterClient.Config.get(group, key);
 
         String cfgKey = group + "/" + key;
@@ -98,6 +99,9 @@ public class CloudConfigServiceWaterImp extends TimerTask implements CloudConfig
         return config;
     }
 
+    /**
+     * 调用api进行更新
+     */
     @Override
     public boolean push(String group, String key, String value) {
         if (Utils.isEmpty(group)) {
@@ -124,6 +128,10 @@ public class CloudConfigServiceWaterImp extends TimerTask implements CloudConfig
 
     private Map<CloudConfigHandler, CloudConfigObserverEntity> observerMap = new HashMap<>();
 
+    /**
+     * observer 关注 group 下的某个key
+     * 其实就是将一个 observer 放到 observerMap 中
+     */
     @Override
     public void attention(String group, String key, CloudConfigHandler observer) {
         if (observerMap.containsKey(observer)) {
@@ -147,7 +155,9 @@ public class CloudConfigServiceWaterImp extends TimerTask implements CloudConfig
             return;
         }
 
+        // 加载某个组
         WaterClient.Config.reload(group);
+        // 获取组下的某个key对应的配置
         ConfigM cfg = WaterClient.Config.get(group, key);
 
         onUpdateDo(group, key, cfg, (cfg2) -> {
@@ -159,6 +169,9 @@ public class CloudConfigServiceWaterImp extends TimerTask implements CloudConfig
         });
     }
 
+    /**
+     * 该类为了保证顺序更新，顺序消费consumer
+     */
     private void onUpdateDo(String group, String key, ConfigM cfg, Consumer<Config> consumer) {
         String cfgKey = group + "/" + key;
         Config config = configMap.get(cfgKey);

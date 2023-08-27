@@ -357,6 +357,7 @@ public abstract class BeanContainer {
                 beanWrapsOfType.put(type, wrap);
                 beanWrapSet.add(wrap);
 
+                // 这里发布通知，之前没inject的就可以注入了。org.noear.solon.core.BeanContainer.getWrapAsync
                 beanNotice(type, wrap);
             }
         }
@@ -394,6 +395,7 @@ public abstract class BeanContainer {
     public void getWrapAsync(Object nameOrType, Consumer<BeanWrap> callback) {
         BeanWrap bw = getWrap(nameOrType);
 
+        // 如果 要注入的对象不存在，则订阅这个对象的生成，一旦 该 BeanWrap被发布，则调用callback，即注入进去
         if (bw == null || bw.raw() == null) {
             beanSubscribe(nameOrType, callback);
         } else {

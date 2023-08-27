@@ -102,6 +102,7 @@ public class CloudDiscoveryServiceWaterImp extends TimerTask implements CloudDis
             checkPath = instance.uri();
         }
 
+        // 调用api接口
         if (Solon.cfg().isFilesMode()) {
             //自己主动刷新
             WaterClient.Registry.register(Solon.cfg().appGroup(), instance.service(), instance.address(), meta, checkPath, 1, alarmMobile, code_location, unstable);

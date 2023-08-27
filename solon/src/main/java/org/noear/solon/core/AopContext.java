@@ -114,17 +114,19 @@ public class AopContext extends BeanContainer {
             //尝试导入（可能会导入属性源，或小饼依赖的组件）
             for (Annotation a1 : clz.getAnnotations()) {
                 if (a1 instanceof Import) {
+                    // 根据该类上的注解进行import
                     beanImport((Import) a1);
                 } else {
+                    // 根据该类上的注解上的注解进行import
                     beanImport(a1.annotationType().getAnnotation(Import.class));
                 }
             }
 
 
-            //尝试注入属性
+            //尝试注入属性，查看该类上是否有Inject注解，有则将注解对应的文件内容或单个属性注入到raw中
             beanInjectProperties(clz, bw.raw());
 
-            //构建小饼
+            // 如果某个方法上加了Bean，构建一个Bean
             for (Method m : ClassWrap.get(bw.clz()).getMethods()) {
                 Bean ma = m.getAnnotation(Bean.class);
 
@@ -208,12 +210,14 @@ public class AopContext extends BeanContainer {
 
     @Override
     protected void beanInject(VarHolder varH, String name, boolean required, boolean autoRefreshed) {
+        // 注入object
         super.beanInject(varH, name, required, autoRefreshed);
 
         if(varH.isDone()){
             return;
         }
 
+        // 映射List类型
         if (Utils.isEmpty(name) && varH.getGenericType() != null) {
             if (List.class == varH.getType()) {
                 //支持 List<Bean> 注入
@@ -232,6 +236,7 @@ public class AopContext extends BeanContainer {
                 }
             }
 
+            // 映射Map类型
             if (Map.class == varH.getType()) {
                 //支持 Map<String,Bean> 注入
                 Type keyType = varH.getGenericType().getActualTypeArguments()[0];
@@ -260,7 +265,7 @@ public class AopContext extends BeanContainer {
      * 尝试 bean 形态注册
      */
     public void beanShapeRegister(Class<?> clz, BeanWrap bw, AnnotatedElement annoEl) {
-        //Plugin
+        // 1、Plugin，不仅插入plugin列表，同时调用该类的 init 和 start方法
         if (Plugin.class.isAssignableFrom(clz)) {
             //如果是插件，则插入
             Solon.app().plug(bw.raw());
@@ -268,6 +273,7 @@ public class AopContext extends BeanContainer {
         }
 
         //LifecycleBean（替代 Plugin，提供组件的生态周期控制）
+        // 2、添加到 lifecycle 列表中
         if (LifecycleBean.class.isAssignableFrom(clz)) {
             //让注解产生的生命周期，排序晚1个点
             int index = bw.index();
@@ -279,16 +285,19 @@ public class AopContext extends BeanContainer {
         }
 
         //EventListener
+        // 3、添加事件监听
         if (EventListener.class.isAssignableFrom(clz)) {
             addEventListener(clz, bw);
         }
 
         //LoadBalance.Factory
+        // 4、添加负载均衡
         if (LoadBalance.Factory.class.isAssignableFrom(clz)) {
             Bridge.upstreamFactorySet(bw.raw());
         }
 
         //Handler
+        // 5、添加 handler，其中的mapping添加到映射器中
         if (Handler.class.isAssignableFrom(clz)) {
             Mapping mapping = annoEl.getAnnotation(Mapping.class);
             if (mapping != null) {
@@ -302,16 +311,19 @@ public class AopContext extends BeanContainer {
         }
 
         //Render
+        // 6、添加render
         if(Render.class.isAssignableFrom(clz)) {
             RenderManager.mapping(bw.name(), (Render) bw.raw());
         }
 
         //Filter
+        // 7、添加filter
         if (Filter.class.isAssignableFrom(clz)) {
             Solon.app().filter(bw.index(), bw.raw());
         }
 
         //RouterInterceptor
+        // 8、添加 RouterInterceptor
         if (RouterInterceptor.class.isAssignableFrom(clz)) {
             Solon.app().routerInterceptor(bw.index(), bw.raw());
         }
@@ -561,8 +573,10 @@ public class AopContext extends BeanContainer {
         Condition mc = m.getAnnotation(Condition.class);
 
         if (started == false && ConditionUtil.ifMissing(mc)) {
+            // 方法上不包含condition注解
             lifecycle(-98, () -> tryCreateBeanOfMethod0(bw, m, ma, mc));
         } else {
+            // 方法上包含condition注解
             tryCreateBeanOfMethod0(bw, m, ma, mc);
         }
     }
@@ -626,6 +640,7 @@ public class AopContext extends BeanContainer {
             }
 
             for (Annotation a : annS) {
+                // 比如 controller，component等注解
                 BeanBuilder builder = beanBuilders.get(a.annotationType());
 
                 if (builder != null) {
@@ -805,6 +820,7 @@ public class AopContext extends BeanContainer {
 
     /**
      * 启动（一般在插件启动之后，应用完成扫描，再执行）
+     * 这里主要是生命周期bean的启动
      */
     public void start() {
         started = true;

@@ -67,13 +67,13 @@ public class CloudEventObserverManger {
      * 添加主题事件处理
      */
     public void add(String topic, EventLevel level, String group, String topicRaw, String tag, int qos, CloudEventHandler observer) {
-        //主题关注关系
+        //主题与观察者的关系
         addTopicObserver(topic, level, group, topicRaw, tag, qos, observer);
 
-        //主题标签关注关系
+        //主题标签与观察者的关系
         addTopicAndTagObserver(topic, level, group, topicRaw, tag, qos, observer);
 
-        //主题与标签
+        //主题与标签的关系
         addTopicTags(topic, tag);
     }
 

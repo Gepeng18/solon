@@ -46,6 +46,10 @@ public final class XPluginImp implements Plugin {
         });
     }
 
+    /**
+     * 1、启动tomcat
+     * 2、向SolonApp中添加一个信号，不知道是干啥的
+     */
     private void start0(SolonApp app) throws Throwable {
         //初始化属性
         ServerProps.init();
@@ -73,6 +77,7 @@ public final class XPluginImp implements Plugin {
 
         app.signalAdd(_signal);
 
+        // 下面都是日志了
         long time_end = System.currentTimeMillis();
 
         String connectorInfo = "solon.connector:main: tomcat: Started ServerConnector@{HTTP/1.1,[http/1.1]";

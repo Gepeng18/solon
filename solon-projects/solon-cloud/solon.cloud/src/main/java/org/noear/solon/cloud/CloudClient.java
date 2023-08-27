@@ -49,12 +49,13 @@ public class CloudClient {
         if (Utils.isNotEmpty(key)) {
             Config config = CloudClient.config().pull(group, key);
 
+            // 加载到配置中
             if (config != null && Utils.isNotEmpty(config.value())) {
                 Properties properties = config.toProps();
                 Solon.cfg().loadAdd(properties);
             }
 
-            //关注实时更新
+            // 关注实时更新
             CloudClient.config().attention(group, key, (cfg) -> {
                 Properties properties = cfg.toProps();
                 Solon.cfg().loadAdd(properties);

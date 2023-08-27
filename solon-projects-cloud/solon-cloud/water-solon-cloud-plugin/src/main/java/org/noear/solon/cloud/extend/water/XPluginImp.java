@@ -118,10 +118,12 @@ public class XPluginImp implements Plugin, InitializingBean {
         }
 
 
+        // 开启配置
         if (cloudProps.getConfigEnable()) {
             configServiceImp = new CloudConfigServiceWaterImp(cloudProps);
             CloudManager.register(configServiceImp);
 
+            // 定时更新 observerMap 中的 observer
             if (Solon.cfg().isFilesMode()) {
                 if (configServiceImp.getRefreshInterval() > 0) {
                     long interval = configServiceImp.getRefreshInterval();
@@ -129,7 +131,7 @@ public class XPluginImp implements Plugin, InitializingBean {
                 }
             }
 
-            //配置加载
+            // water配置加载，就是加载配置+将observer放到 observerMap 中
             CloudClient.configLoad(cloudProps.getConfigLoad());
         }
 
@@ -139,6 +141,7 @@ public class XPluginImp implements Plugin, InitializingBean {
         }
 
 
+        // 开启服务发现
         if (cloudProps.getDiscoveryEnable()) {
             discoveryServiceImp = new CloudDiscoveryServiceWaterImp(cloudProps);
             CloudManager.register(discoveryServiceImp);
@@ -151,6 +154,7 @@ public class XPluginImp implements Plugin, InitializingBean {
             }
         }
 
+        // 开启事件总线
         if (cloudProps.getEventEnable()) {
             String receive = getEventReceive();
             if (receive != null && receive.startsWith("@")) {
@@ -165,12 +169,14 @@ public class XPluginImp implements Plugin, InitializingBean {
 
             CloudManager.register(eventServiceImp);
 
+            // water自己的的更新
             if (discoveryServiceImp != null || i18nServiceImp != null) {
                 //关注缓存更新事件
                 eventServiceImp.attention(EventLevel.instance, "", "", WW.msg_ucache_topic, "",
                         0, new HandlerCacheUpdate(discoveryServiceImp, i18nServiceImp));
             }
 
+            // water自己的的更新
             if (configServiceImp != null) {
                 //关注配置更新事件
                 eventServiceImp.attention(EventLevel.instance, "", "", WW.msg_uconfig_topic, "",
@@ -199,12 +205,14 @@ public class XPluginImp implements Plugin, InitializingBean {
 
         //3.注册http监听
         if (cloudProps.getJobEnable()) {
+            // Server调用本机的job执行
             Solon.app().http(WW.path_run_job, new HandlerJob());
         }
 
         Solon.app().http(WW.path_run_check, new HandlerCheck());
         Solon.app().http(WW.path_run_status, new HandlerStatus());
         Solon.app().http(WW.path_run_stop, new HandlerStop());
+        // Server发送msg给本机
         Solon.app().http(WW.path_run_msg, new HandlerReceive(eventServiceImp));
     }
 

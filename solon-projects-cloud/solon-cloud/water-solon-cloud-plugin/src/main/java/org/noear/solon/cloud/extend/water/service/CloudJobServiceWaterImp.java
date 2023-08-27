@@ -30,6 +30,9 @@ public class CloudJobServiceWaterImp implements CloudJobService {
         return jobMap.get(name);
     }
 
+    /**
+     * 把jobs中的内容通过API上报给Server
+     */
     public void push() {
         if (jobMap.size() == 0) {
             return;
@@ -40,6 +43,7 @@ public class CloudJobServiceWaterImp implements CloudJobService {
             jobs.add(new JobM(v.getName(), v.getCron7x(), v.getDescription()));
         });
 
+        // API调用
         try {
             WaterClient.Job.register(Solon.cfg().appGroup(), Solon.cfg().appName(), jobs);
         } catch (IOException e) {

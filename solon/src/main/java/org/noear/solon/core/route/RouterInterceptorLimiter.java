@@ -46,7 +46,7 @@ public class RouterInterceptorLimiter implements RouterInterceptor {
             //执行拦截
             interceptor.doIntercept(ctx, mainHandler, chain);
         } else {
-            //原路传递
+            //跨过当前节点，向下一个拦截器传递（原注释为：原路传递，个人感觉不恰当）
             chain.doIntercept(ctx, mainHandler);
         }
     }
