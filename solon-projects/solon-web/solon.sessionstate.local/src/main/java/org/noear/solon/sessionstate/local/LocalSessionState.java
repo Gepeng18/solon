@@ -81,6 +81,9 @@ public class LocalSessionState extends SessionStateBase {
         sessionChangeId();
     }
 
+    /**
+     * 延迟删除
+     */
     @Override
     public void sessionRefresh() {
         String sid = sessionIdPush();

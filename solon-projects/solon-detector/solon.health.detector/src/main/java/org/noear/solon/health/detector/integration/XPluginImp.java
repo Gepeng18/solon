@@ -28,7 +28,7 @@ public class XPluginImp implements Plugin {
             DetectorManager.add(detector);
         });
 
-        //健康配置器
+        //健康配置器，主要是将 detectorMap 中的数据添加到 indicatorMap 中
         HealthConfigurator healthConfigurator = new HealthConfigurator();
         if (healthConfigurator.isEnabled()) {
             EventBus.subscribe(AppBeanLoadEndEvent.class, e->{

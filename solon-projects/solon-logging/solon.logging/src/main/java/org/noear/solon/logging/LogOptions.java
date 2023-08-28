@@ -85,6 +85,7 @@ public class LogOptions {
 
     /**
      * 初始化记录器默认等级
+     * 读取 solon.logging.logger 对应的属性，key为 root.level，value为 DEBUG，则默认的rootLevel就是 DEBUG
      */
     private static synchronized void loggerLevelMapInit() {
         if (loggerLevelMapInited) {

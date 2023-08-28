@@ -40,13 +40,14 @@ public class XPluginImp implements Plugin , InitializingBean {
                     Appender appender = ClassUtil.tryInstance(val);
                     if (appender != null) {
                         String name = key.substring(0, key.length() - 6);
+                        // 注册到 appenderMap中
                         AppenderManager.register(name, appender);
                     }
                 }
             });
         }
 
-        //init
+        //init 初始化记录器等级配置
         LogOptions.getLoggerLevelInit();
 
         Solon.app().filter(-9, (ctx, chain) -> {

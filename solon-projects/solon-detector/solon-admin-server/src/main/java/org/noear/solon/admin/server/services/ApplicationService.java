@@ -57,7 +57,7 @@ public class ApplicationService {
         }
 
         applications.put(key, application);
-        // 计划心跳检测
+        // 计划心跳检测（这里个人认为就是更新Server端的本机时间，没有做新条件检测啊）
         scheduleHeartbeatCheck(application);
         // 向前端发送注册信息
         sessions.forEach(it -> it.sendAsync(JsonUtils.toJson(new ApplicationWebsocketTransfer<>(
@@ -66,7 +66,7 @@ public class ApplicationService {
                 application
         ))));
 
-        // 计划客户端监视器数据获取
+        // 计划客户端监视器数据获取（调用client端的/solon-admin/api/monitor/data，并向前端发送数据更新）
         scheduleClientMonitor(application);
 
         log.info("Application registered: {}", application);
@@ -123,6 +123,7 @@ public class ApplicationService {
 
     private void scheduleHeartbeatCheck(Application application) {
         Runnable heartbeatCallback = () -> {
+            // 更新server的application的状态和最后一次down机时间，并向前端发送数据更新
             runHeartbeatCheck(application);
             scheduleHeartbeatCheck(application);
         };
@@ -151,6 +152,7 @@ public class ApplicationService {
 
     private void scheduleClientMonitor(Application application) {
         Runnable clientMonitorCallback = () -> {
+            // 调用client端的/solon-admin/api/monitor/data，并向前端发送数据更新
             runClientMonitor(application);
             scheduleClientMonitor(application);
         };

@@ -39,6 +39,9 @@ class ScheduledStore {
         }
     }
 
+    /**
+     * 延迟删除
+     */
     public void delay(String block) {
         Entity ent = _data.get(block);
         if (ent != null) {

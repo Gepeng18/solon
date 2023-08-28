@@ -193,7 +193,7 @@ public class ChainManager {
     }
 
     /**
-     * 设置Session状态管理器
+     * 设置Session状态管理器，每次请求前都把session进行延迟删除，没搞懂啥情况
      */
     public static void setSessionStateFactory(SessionStateFactory ssf) {
         if (ssf != null) {

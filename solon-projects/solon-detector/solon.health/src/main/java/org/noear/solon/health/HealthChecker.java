@@ -42,7 +42,9 @@ public class HealthChecker {
     public static HealthCheckResult check() {
         Map<String, HealthCheckResult> details = new LinkedHashMap<>();
 
+        // healthResult 是 总状态
         HealthCheckResult healthResult = new HealthCheckResult();
+        // details是每个监测点的状态
         healthResult.setDetails(details);
 
         //todo:此处可能会异常？...by noear
