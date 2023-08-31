@@ -352,6 +352,7 @@ public class SolonLogger implements Logger {
 
         if (format != null) {
             if (args != null && args.length > 0) {
+                // 处理 args 中包含异常的arg，将其转化为 异常字符串
                 for (int i = 0, len = args.length; i < len; i++) {
                     if (args[i] instanceof Throwable) {
                         throwable = Utils.throwableUnwrap((Throwable) args[i]);
@@ -361,11 +362,13 @@ public class SolonLogger implements Logger {
                     }
                 }
 
+                // 格式化
                 content = MessageFormatter.arrayFormat(format, args, null).getMessage();
             } else {
                 content = format;
             }
 
+            // throwableStr 拼到 content上
             if (throwableStr != null) {
                 //
                 // 可能异常不在格式范围内...
@@ -380,10 +383,12 @@ public class SolonLogger implements Logger {
             }
         }
 
+        // 生成 LogEvent
         LogEvent logEvent = new LogEvent(getName(), level, metainfo, content,
                 System.currentTimeMillis(),
                 Thread.currentThread().getName(), throwable);
 
+        // 循环通知AppenderHolder
         AppenderManager.append(logEvent);
     }
 }

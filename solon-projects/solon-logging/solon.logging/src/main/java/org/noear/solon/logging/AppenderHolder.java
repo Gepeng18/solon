@@ -99,6 +99,7 @@ public final class AppenderHolder {
             return;
         }
 
+        // 过滤
         if (this.level.code > logEvent.getLevel().code) {
             return;
         }

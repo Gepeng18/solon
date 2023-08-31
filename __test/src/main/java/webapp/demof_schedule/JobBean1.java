@@ -7,9 +7,9 @@ import org.noear.solon.scheduling.annotation.Scheduled;
 /**
  * @author noear 2023/3/20 created
  */
-//@Component
+@Component
 public class JobBean1 {
-    @CloudJob
+    @CloudJob(name = "job1")
     public void job1(){
         System.out.println("job1");
     }

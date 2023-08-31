@@ -61,6 +61,9 @@ public abstract class CloudBreakerServiceLocalImpl implements CloudBreakerServic
 
     protected abstract BreakerEntrySim create(String name, int value);
 
+    /**
+     * get or create
+     */
     @Override
     public AutoCloseable entry(String breakerName) throws BreakerException {
         BreakerEntrySim tmp = breakers.get(breakerName);

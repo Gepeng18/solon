@@ -53,6 +53,9 @@ public abstract class OutputStreamAppender extends AppenderSimple {
         super.append(logEvent);
     }
 
+    /**
+     * 该类继承自AppenderSimple，AppenderSimple的appendDo是将结果调用System.out进行输出
+     */
     @Override
     protected void appendDo(Level level, String title, Object content) {
         synchronized (out) {

@@ -3,6 +3,7 @@ package org.noear.solon.logging.utils;
 import org.slf4j.MDC;
 
 /**
+ * 就是一个简单的建造者，对应每一个tag，将其放到MDC中
  * @author noear
  * @since 1.0
  */

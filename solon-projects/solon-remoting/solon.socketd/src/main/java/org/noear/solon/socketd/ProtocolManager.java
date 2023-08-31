@@ -7,7 +7,7 @@ import org.noear.solon.socketd.protocol.MessageProtocolBase;
 import java.nio.ByteBuffer;
 
 /**
- * 消息协议管理者
+ * 消息协议管理者 - 就是一个包装器
  *
  * @author noear
  * @since 1.2

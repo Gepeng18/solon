@@ -36,6 +36,7 @@ public class AppenderSimple extends AppenderBase {
             return;
         }
 
+        // 1、构建了一个StringBuilder，不停地向buf中赛数据
         LocalDateTime dateTime = LocalDateTime.ofInstant(new Date(logEvent.getTimeStamp()).toInstant(), ZoneId.systemDefault());
         DateTimeFormatter dateTimeF = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
 
@@ -63,6 +64,7 @@ public class AppenderSimple extends AppenderBase {
         buf.append("#").append(getName());
         buf.append(": ");
 
+        // 2、调用 appendDo 进行打印
         appendDo(logEvent.getLevel(), buf.toString(), logEvent.getContent());
     }
 
