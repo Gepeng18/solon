@@ -14,6 +14,7 @@ import org.noear.solon.core.event.AppLoadEndEvent;
 public class XPluginImp implements Plugin {
     @Override
     public void start(AopContext context) {
+        // 1、注册所有 IJob 到 JobManager 中
         context.lifecycle(-99, () -> {
             context.beanForeach((v) -> {
                 if (v.raw() instanceof IJob) {

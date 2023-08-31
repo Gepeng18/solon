@@ -37,6 +37,9 @@ public class RouterListener implements Listener{
         });
     }
 
+    /**
+     * 获取加了 @ServerEndPoint注解的类，调用其 onOpen 方法
+     */
     private void onOpen0(Session session) {
         try {
             //路由监听模式（起到过滤器作用）
