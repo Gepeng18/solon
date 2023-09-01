@@ -100,6 +100,11 @@ public class RedisCacheService implements CacheService {
         return client;
     }
 
+    /**
+     * 1、生成key：header + md5
+     * 2、生成value，主要是对object进行序列化
+     * 3、写入redis中
+     */
     @Override
     public void store(String key, Object obj, int seconds) {
         if (obj == null) {

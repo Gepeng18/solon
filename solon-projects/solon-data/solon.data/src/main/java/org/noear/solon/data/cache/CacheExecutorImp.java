@@ -19,6 +19,10 @@ public class CacheExecutorImp {
 
     /**
      * 添加缓存
+     * 1、构建缓存key（如果有注解的key，优先用）
+     * 2、从缓存获取，缓存中则直接返回
+     * 3、缓存中没有，则调用方法，当获取的结果不为null，则进行缓存
+     * 4、向缓存中添加标签，其实就是调用cacheService的add方法向key为tag，value为List<key>中的value再添加一个key。
      *
      * @param anno     注解
      * @param inv      拦截动作
@@ -52,12 +56,12 @@ public class CacheExecutorImp {
             result = cs.get(key);
 
             if (result == null) {
-                //2.执行调用，并返回
+                //2. 缓存中没有，执行调用，并返回
                 //
                 result = executor.get();
 
                 if (result != null) {
-                    //3.不为null，则进行缓存
+                    //3. 调用方法获取的结果不为null，则进行缓存
                     //
                     cs.store(key, result, anno.seconds());
 
@@ -89,12 +93,14 @@ public class CacheExecutorImp {
             return;
         }
 
+        // 根据service获取缓存服务
         CacheService cs = CacheLib.cacheServiceGet(anno.service());
 
         //按 key 清除缓存
         if (Utils.isNotEmpty(anno.keys())) {
             String keys = InvKeys.buildByTmlAndInv(anno.keys(), inv, rstValue);
 
+            // 调用缓存服务删除这些key
             for (String key : keys.split(",")) {
                 cs.remove(key);
             }
@@ -123,6 +129,7 @@ public class CacheExecutorImp {
             return;
         }
 
+        // 获取缓存服务
         CacheService cs = CacheLib.cacheServiceGet(anno.service());
 
         //按 key 更新缓存

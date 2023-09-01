@@ -60,13 +60,13 @@ public class LocalCacheService implements CacheService {
             if (ent == null) {
                 //如果末存在，则新建实体
                 ent = new Entity(obj);
-                _data.put(key, ent);
-            } else {
+                _data.put(key, ent);            } else {
                 //如果已存储，取消超时处理，且更新值
                 ent.value = obj;
                 ent.futureDel();
             }
 
+            // 设置一个延时任务，一定时间后，把key从cache中删除
             if (seconds > 0) {
                 //设定新的超时
                 ent.future = _exec.schedule(() -> {

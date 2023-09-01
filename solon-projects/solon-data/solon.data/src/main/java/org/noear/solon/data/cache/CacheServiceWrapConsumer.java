@@ -7,6 +7,7 @@ import java.util.function.Consumer;
 
 /**
  * 缓存服务事件监控器。监听BeanWrap，获得CacheService bean
+ * 就干了一件事，将 CacheService 这个bean塞到一个全局map中，这样好让其他类能够直接通过static静态方法拿到
  *
  * @author noear
  * @since 1.0

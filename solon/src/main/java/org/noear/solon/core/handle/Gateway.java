@@ -158,6 +158,7 @@ public abstract class Gateway extends HandlerAide implements Handler, Render {
 
     /**
      * for Handler
+     * 调用 filterList 进行处理，其中包含一个filter，处理逻辑为：前置处理，主处理，后置处理
      */
     @Override
     public void handle(Context c) throws Throwable {
@@ -219,8 +220,10 @@ public abstract class Gateway extends HandlerAide implements Handler, Render {
             //主处理（最多一次尝染）
             if (c.getHandled() == false) {
                 if (is_action) {
+                    // 如果是action，则调用action的处理方法
                     ((Action) m).invoke(c, obj);
                 } else {
+                    // 否则调用handle的处理逻辑
                     m.handle(c);
                 }
             } else {
@@ -357,18 +360,24 @@ public abstract class Gateway extends HandlerAide implements Handler, Render {
             return;
         }
 
+        // 轮训所有的bean，查看
         Mapping bMapping = beanWp.clz().getAnnotation(Mapping.class);
+
         String bPath = null;
         if (bMapping != null) {
             bPath = Utils.annoAlias(bMapping.value(), bMapping.path());
         }
 
+        // render传进去的目的是要把自己作为render了，那肯定是渲染要调用自己的某个方法（猜测就是render方法）
         HandlerLoader uw = HandlerLoaderFactory.global().create(beanWp, bPath, remoting, this, allowActionMapping());
 
+        // 调用下面的方法将 handler 加入slots，加到哪里呢？其实就是调用addDo加到gateway的mainRouting中了
         uw.load((expr, method, handler) -> {
             if (path == null) {
+                // path为空，则是默认的mapping
                 addDo(expr, method, handler);
             } else {
+                // path不为空，则制定path
                 addDo(PathUtil.mergePath(path, expr), method, handler);
             }
         });
@@ -400,11 +409,13 @@ public abstract class Gateway extends HandlerAide implements Handler, Render {
      * 添加接口
      */
     protected void addDo(String path, MethodType method, Handler handler) {
+        // 1、如果path为空，则传进来的handler，也就是加了@mapping的方法就是默认的handler
         if (Utils.isEmpty(path) || "/".equals(path)) {
             mainDef = handler;
             return;
         }
 
+        // 2、其余的都添加到mainRouting中。
         //addPath 已处理 path1= null 的情况
         if (allowPathMerging()) {
             String path2 = PathUtil.mergePath(mapping, path);
@@ -429,13 +440,18 @@ public abstract class Gateway extends HandlerAide implements Handler, Render {
     protected Handler findDo(Context c, String path) throws Throwable {
         Handler h;
 
+        // 1、挑选handler
         if (path == null) { //null 表示直接使用默认处理器，且不跳过
+            // 如果请求路径就是null，则用默认的mainDef
             h = mainDef;
         } else {
+            // 否则根据 mainRouting 进行 match
             h = getDo(c, path);
         }
 
+        // 2、调用handler进行处理
         if (h == null) {
+            // 如果之前没挑选到handler，那么就调用默认的handler进行处理
             mainDef.handle(c);
             c.setHandled(true);
             return mainDef;

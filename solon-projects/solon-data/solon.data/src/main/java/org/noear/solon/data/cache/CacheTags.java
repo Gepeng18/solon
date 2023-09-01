@@ -59,6 +59,8 @@ public class CacheTags {
 
     /**
      * 移除标签相关的所有缓存
+     * 1、根据tag遍历所有的key，每个key如果不以特殊标志开头，那么就从缓存中删除这个key
+     * 2、再从缓存中将tag对应的value全部删除
      *
      * @param tag 缓存标签
      */
@@ -80,7 +82,8 @@ public class CacheTags {
 
     /**
      * 更新标签相关的所有缓存
-     *
+     * 根据tag遍历所有的key，每个key如果不以特殊标志开头，那么就判断缓存中是否有这个key，如果没这个key那就什么也不做，
+     * 如果有这个key，那就判断本次要刷新的value是否为null，为null就删除这个key，不为null，就把value写到这个key中。
      * @param tag 缓存标签
      * @param newValue 新的值
      * @param seconds 秒数
