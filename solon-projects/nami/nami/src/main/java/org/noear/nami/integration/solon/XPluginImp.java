@@ -17,6 +17,11 @@ import java.util.Map;
 public class XPluginImp implements Plugin {
     private Map<NamiClient, Object> cached = new LinkedHashMap<>();
 
+    /**
+     * eg. @NamiClient(url = "http://localhost:9001/rpc/v1/user", headers = "Content-Type=application/json")
+     * 代码逻辑非常简单，就是在注入的时候，对其进行动态代理，然后再注入即可
+     * 动态代理逻辑见： {@link NamiHandler#invoke}，就是执行http调用
+     */
     @Override
     public void start(AopContext context) {
         if (NamiConfigurationDefault.proxy == null) {
@@ -24,6 +29,7 @@ public class XPluginImp implements Plugin {
         }
 
         context.beanInjectorAdd(NamiClient.class, (varH, anno) -> {
+            // 加了NamiClient注解的属性必须是个接口
             if (varH.getType().isInterface() == false) {
                 return;
             }
@@ -46,6 +52,7 @@ public class XPluginImp implements Plugin {
                 synchronized (anno) {
                     obj = cached.get(anno);
                     if (obj == null) {
+                        // 创建代理，并设置到缓存中去
                         obj = Nami.builder().create(varH.getType(), anno);
                         cached.put(anno, obj);
                     }
