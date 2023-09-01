@@ -23,6 +23,11 @@ public class XPluginImp implements Plugin , InitializingBean {
         AppenderManager.init();
     }
 
+    /**
+     * 1、根据配置指明哪些类用什么 Appender，然后将其放到 appenderMap 中
+     * 2、初始化记录器默认等级，读取 solon.logging.logger 对应的属性，key为 root.level，value为 DEBUG，则默认的rootLevel就是 DEBUG
+     * 3、在 Solon.app()中多增加一个filter，在filter中清除MDC的数据
+     */
     @Override
     public void start(AopContext context) {
         Properties props = Solon.cfg().getProp("solon.logging.appender");
@@ -50,6 +55,7 @@ public class XPluginImp implements Plugin , InitializingBean {
         //init 初始化记录器等级配置
         LogOptions.getLoggerLevelInit();
 
+        // 在 Solon.app()中多增加一个filter，在filter中清除MDC的数据
         Solon.app().filter(-9, (ctx, chain) -> {
             MDC.clear();
             chain.doFilter(ctx);
