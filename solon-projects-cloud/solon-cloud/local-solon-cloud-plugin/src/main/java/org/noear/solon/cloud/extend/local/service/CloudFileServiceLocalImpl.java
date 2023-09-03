@@ -88,6 +88,9 @@ public class CloudFileServiceLocalImpl implements CloudFileService {
         }
     }
 
+    /**
+     * 就是获取 root/bucket/key，只不过key可能是 /dir1/dir2/file
+     */
     private File getFile(String bucket, String key) {
         if (Utils.isEmpty(bucket)) {
             bucket = "DEFAULT_BUCKET";
@@ -102,6 +105,7 @@ public class CloudFileServiceLocalImpl implements CloudFileService {
             }
         }
 
+        // 如果key是 /dir1/dir2/file，那么如果 root/bucket/dir1/dir2 文件夹不存在，则需要先创建
         int last = key.lastIndexOf('/');
         if (last > 0) {
             String dir2Str = key.substring(0, last);

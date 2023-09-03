@@ -6,6 +6,7 @@ import org.noear.solon.core.event.AppInitEndEvent;
 import org.noear.solon.core.event.EventBus;
 import org.noear.solon.logging.AppenderManager;
 import org.noear.solon.logging.LogOptions;
+import org.noear.solon.logging.appender.ConsoleAppender;
 import org.noear.solon.logging.event.Level;
 import org.noear.solon.logging.event.LogEvent;
 import org.slf4j.Logger;
@@ -24,6 +25,7 @@ public class SolonLogger implements Logger {
     private Level loggerLevel = Level.TRACE;
 
 
+    // 创建一个logger实例
     public SolonLogger(String name) {
         loggerName = name;
 
@@ -341,7 +343,15 @@ public class SolonLogger implements Logger {
         error(s, throwable);
     }
 
+    /**
+     * 1、日志拦截，高于配置的本类的日志级别才能打印日志
+     * 2、日志内容格式化
+     * 3、将类名，日志级别，MDC信息，格式化后的日志内容，当前时间等信息包装秤LogEvent
+     * 4、循环通知AppenderHolder，它是个包装类，底层引用 Appender，
+     *    如 {@link ConsoleAppender 将日志输出到控制台}，{@link demo2010.dso.PersistentAppender 批量打印}
+     */
     private void appendDo(Level level, String content, String format, Object[] args) {
+        // 日志拦截
         if(level.code < loggerLevel.code){
             return;
         }

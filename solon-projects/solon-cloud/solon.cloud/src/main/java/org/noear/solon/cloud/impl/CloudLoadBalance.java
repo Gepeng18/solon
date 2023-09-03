@@ -44,8 +44,10 @@ public class CloudLoadBalance implements LoadBalance {
         this.group = group;
 
         if (CloudClient.discovery() != null) {
+            // 调用服务发现服务获取discovery对象（在water中是调用/sev/discover接口）
             discovery = CloudClient.discovery().find(group, service);
 
+            // 关注attention事件（将handler添加到discovery的observerMap中）
             CloudClient.discovery().attention(group, service, d1 -> {
                 discovery = d1;
             });

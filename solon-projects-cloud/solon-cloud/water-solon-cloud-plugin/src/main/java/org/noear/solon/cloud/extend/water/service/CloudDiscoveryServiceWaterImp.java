@@ -12,6 +12,7 @@ import org.noear.solon.cloud.service.CloudDiscoveryService;
 import org.noear.solon.cloud.utils.IntervalUtils;
 import org.noear.solon.core.Signal;
 import org.noear.solon.core.event.EventBus;
+import org.noear.solon.core.handle.Context;
 import org.noear.solon.health.HealthHandler;
 import org.noear.water.WaterClient;
 import org.noear.water.model.DiscoverM;
@@ -75,6 +76,7 @@ public class CloudDiscoveryServiceWaterImp extends TimerTask implements CloudDis
 
             }
 
+            // 定时刷新一次，通过api请求water服务端，获取group下的service的所有provider，然后执行本地缓存的刷新操作（局部变量直接赋值）
             try {
                 observerMap.forEach((k, v) -> {
                     onUpdate(v.group, v.service);
@@ -132,6 +134,11 @@ public class CloudDiscoveryServiceWaterImp extends TimerTask implements CloudDis
         WaterClient.Registry.unregister(group, instance.service(), instance.address(), meta);
     }
 
+    /**
+     * 对应{@link waterapi.controller.register.CMD_sev_discover#cmd_exec 接口}
+     * @param group 分组
+     * @param service 服务名
+     */
     @Override
     public Discovery find(String group, String service) {
         Instance instance = Instance.local();
@@ -151,9 +158,11 @@ public class CloudDiscoveryServiceWaterImp extends TimerTask implements CloudDis
 
     public void onUpdate(String group, String service) {
         if (serviceMap.containsKey(service)) {
+            // 通过api请求water服务端，获取group下的service的所有provider
             Discovery discovery = find(group, service);
 
             observerMap.forEach((k, v) -> {
+                // 执行所有handler，大部分是更新bean的局部变量
                 if (service.equals(v.service)) {
                     v.handle(discovery);
                 }

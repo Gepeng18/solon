@@ -55,6 +55,7 @@ public class PluginManager {
             throw new IllegalArgumentException("Addin does not exist: " + name);
         }
 
+        // 设置 addinPackage
         if (info.getAddinPackage() == null) {
             info.setAddinPackage(loadJar(info.getFile()));
         }

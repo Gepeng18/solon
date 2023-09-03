@@ -42,7 +42,7 @@ public class HandlerCacheUpdate implements CloudEventHandler {
     }
 
     /**
-     * 更新 upstream
+     * 更新 upstream 和 i18n
      * */
     public boolean cacheUpdateHandler0(String tagKey) {
         String[] ss = null;
@@ -80,7 +80,7 @@ public class HandlerCacheUpdate implements CloudEventHandler {
     }
 
     /**
-     * 更新 cache
+     * 更新 wood cache
      * */
     public void cacheUpdateHandler1(String tag) {
         if (tag.indexOf(".") > 0) {

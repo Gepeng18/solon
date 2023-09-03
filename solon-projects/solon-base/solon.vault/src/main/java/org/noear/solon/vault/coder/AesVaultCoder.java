@@ -19,6 +19,7 @@ public class AesVaultCoder implements VaultCoder {
     private final String algorithm = "AES/ECB/PKCS5Padding";
     private final String password;
 
+    // 密钥通过配置文件传入
     public AesVaultCoder() {
         this.password = Solon.cfg().get("solon.vault.password");
     }

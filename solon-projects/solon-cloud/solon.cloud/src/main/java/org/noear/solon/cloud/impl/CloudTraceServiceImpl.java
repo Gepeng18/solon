@@ -26,10 +26,14 @@ public class CloudTraceServiceImpl implements CloudTraceService {
         traceIdLocal.set(traceId);
     }
 
+    /**
+     * 从threadLocal或者context中获取uuid，如果没有就生成，然后放进去
+     */
     @Override
     public String getTraceId() {
         Context ctx = Context.current();
 
+        // context如果为null，则生成一个uuid，放到threadLocal中
         if (ctx == null) {
             String traceId = traceIdLocal.get();
             if (Utils.isEmpty(traceId)) {
@@ -39,6 +43,7 @@ public class CloudTraceServiceImpl implements CloudTraceService {
 
             return traceId;
         } else {
+            // context如果不为null，则生成一个uuid，放到header中
             String traceId = ctx.header(HEADER_TRACE_ID_NAME());
 
             if (Utils.isEmpty(traceId)) {
@@ -50,6 +55,9 @@ public class CloudTraceServiceImpl implements CloudTraceService {
         }
     }
 
+    /**
+     * 从header中取出fromId，如果fromId为空，则从context中获取readIp，设置到header中
+     */
     @Override
     public String getFromId() {
         Context ctx = Context.current();

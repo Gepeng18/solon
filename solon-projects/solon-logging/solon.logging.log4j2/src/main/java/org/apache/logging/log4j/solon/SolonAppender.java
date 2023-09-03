@@ -30,6 +30,11 @@ public final  class SolonAppender extends AbstractAppender {
         super(name, filter, layout, ignoreExceptions, Property.EMPTY_ARRAY);
     }
 
+    /**
+     * 入参的 LogEvent 是 log4j 中的 model，个人猜测是每次调用log.info之类的方法时，底层都被log4j包调用 append(LogEvent)，
+     * 然后本类就将所有的数据封装成 org.noear.solon.logging.event.LogEvent event ，然后调用 AppenderManager.appendNotPrinted
+     *    轮训调用非打印的Appender的append方法。
+     */
     @Override
     public void append(LogEvent e) {
         //solon console 1个，所以最少2个起
