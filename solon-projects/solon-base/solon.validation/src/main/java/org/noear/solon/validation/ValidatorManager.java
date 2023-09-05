@@ -192,6 +192,9 @@ public class ValidatorManager {
         Result<List<BeanValidateInfo>> result = Result.succeed();
         result.setData(new ArrayList<>());
 
+        /**
+         * 获取方法的入参的每个参数上的注解，调用 validateOfValue0
+         */
         for (int i = 0, len = inv.args().length; i < len; i++) {
             ParamWrap pw = inv.method().getParamWraps()[i];
 
@@ -216,6 +219,7 @@ public class ValidatorManager {
     }
 
     private static void validateOfValue0(String label, Annotation anno, Object val, Result<List<BeanValidateInfo>> result, StringBuilder tmp) {
+        // 根据参数的注解获取校验器
         Validator valid = validMap.get(anno.annotationType());
 
         if (valid != null) {
@@ -229,6 +233,7 @@ public class ValidatorManager {
                     rst.setDescription(label);
                 }
 
+                // 将校验结果写到 result 中
                 if (rst.getData() instanceof  BeanValidateInfo){
                     BeanValidateInfo info = (BeanValidateInfo) rst.getData();
                     anno = info.anno;
