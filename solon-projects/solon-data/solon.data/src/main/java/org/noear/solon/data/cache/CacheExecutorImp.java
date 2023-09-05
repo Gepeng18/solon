@@ -82,7 +82,12 @@ public class CacheExecutorImp {
     }
 
     /**
-     * 清除移除
+     * 清除缓存
+     * 根据service获取CacheService
+     * 1、调用相关服务的remove清除缓存
+     * 2、移除标签相关的所有缓存
+     *    2.1、根据tag遍历所有的key，每个key如果不以特殊标志开头，那么就从缓存中删除这个key
+     *    2.2、再从缓存中将tag对应的value全部删除
      *
      * @param anno     注解
      * @param inv      拦截动作
@@ -119,7 +124,11 @@ public class CacheExecutorImp {
 
     /**
      * 缓存更新
-     *
+     * 根据service获取CacheService
+     * 1、调用相关服务的store更新缓存
+     * 2、更新标签相关的所有缓存
+     *    根据tag遍历所有的key，每个key如果不以特殊标志开头，那么就判断缓存中是否有这个key，如果没这个key那就什么也不做，
+     *    如果有这个key，那就判断本次要刷新的value是否为null，为null就删除这个key，不为null，就把value写到这个key中。
      * @param anno     注解
      * @param inv      拦截动作
      * @param rstValue 结果值（将做更新值用）

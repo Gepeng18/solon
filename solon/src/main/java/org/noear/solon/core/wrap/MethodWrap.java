@@ -41,6 +41,7 @@ public class MethodWrap implements Interceptor, MethodHolder {
             if (anno instanceof Around) {
                 doInterceptorAdd((Around) anno);
             } else {
+                // 扫描如 @CachePut @CacheRemove @Cache等注解
                 InterceptorEntity ie = context.beanInterceptorGet(anno.annotationType());
                 if (ie != null) {
                     doInterceptorAdd(ie);
