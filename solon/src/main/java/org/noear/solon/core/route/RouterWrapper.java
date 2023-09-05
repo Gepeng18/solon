@@ -26,6 +26,8 @@ public abstract class RouterWrapper implements HandlerSlots {
         _router = new RouterDefault();
         _routerHandler = new RouterHandler(_router);
 
+        // _router 加到 interceptors 中
+        // 本类的 doFilter 加到 filter 中
         _chainManager.addInterceptor(_routerHandler, Integer.MAX_VALUE);
         _chainManager.addFilter(appFilter, Integer.MAX_VALUE);
     }
