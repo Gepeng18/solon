@@ -118,6 +118,9 @@ public class NamiHandler implements InvocationHandler {
     }
 
 
+    /**
+     * 这个函数 直接看 最后一行调用的参数即可
+     */
     @Override
     public Object invoke(Object proxy, Method method, Object[] vals) throws Throwable {
         //检查upstream
@@ -252,9 +255,9 @@ public class NamiHandler implements InvocationHandler {
         }
 
         //确定返回类型
-        Type type = method.getGenericReturnType();
-        if (type == null) {
-            type = method.getReturnType();
+        Type returnType = method.getGenericReturnType();
+        if (returnType == null) {
+            returnType = method.getReturnType();
         }
 
 
@@ -264,7 +267,7 @@ public class NamiHandler implements InvocationHandler {
                 .action(act)
                 .url(url, fun)
                 .call(headers, args, body)
-                .getObject(type);
+                .getObject(returnType);
 
         return rst;//调试时，方便看
     }

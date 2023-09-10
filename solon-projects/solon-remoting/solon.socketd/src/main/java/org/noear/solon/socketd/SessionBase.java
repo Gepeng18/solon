@@ -196,6 +196,7 @@ public abstract class SessionBase implements Session {
 
     /**
      * 用于支持双向RPC
+     * 异步转同步
      *
      * @param timeout 单位为秒
      * */
@@ -213,11 +214,12 @@ public abstract class SessionBase implements Session {
         CompletableFuture<Message> request = new CompletableFuture<>();
         RequestManager.register(message, request);
 
-        //发送消息
+        // 如果没有建立连接，就建立连接，如果建立连接了，就直接发送消息
         send(message);
 
         try {
             //等待响应
+            // org.noear.solon.socketd.RouterListener.onMessage0 中如果接收到该消息的返回，会将result设置到CompletableFuture中
             return request.get(timeout, TimeUnit.SECONDS);
         } catch (Exception e) {
             throw new RuntimeException(e);
