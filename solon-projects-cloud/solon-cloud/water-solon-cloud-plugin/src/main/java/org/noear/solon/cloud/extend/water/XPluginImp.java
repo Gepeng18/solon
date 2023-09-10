@@ -127,11 +127,12 @@ public class XPluginImp implements Plugin, InitializingBean {
             if (Solon.cfg().isFilesMode()) {
                 if (configServiceImp.getRefreshInterval() > 0) {
                     long interval = configServiceImp.getRefreshInterval();
+                    // 定时执行，刷新所有的配置（无视本地缓存），然后调用observerMap中的handler的handle方法
                     clientTimer.schedule(configServiceImp, interval, interval);
                 }
             }
 
-            // water配置加载，就是加载配置+将observer放到 observerMap 中
+            // water配置加载，就是首次加载配置+将observer放到 observerMap 来定期加载到全局配置properties中
             CloudClient.configLoad(cloudProps.getConfigLoad());
         }
 

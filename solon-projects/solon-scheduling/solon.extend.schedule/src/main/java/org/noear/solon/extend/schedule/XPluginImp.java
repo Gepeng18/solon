@@ -24,6 +24,7 @@ public class XPluginImp implements Plugin {
         });
 
         context.lifecycle(Integer.MAX_VALUE, () -> {
+            // 2、启动 JobManager
             JobManager.run(JobRunner.global);
         });
     }

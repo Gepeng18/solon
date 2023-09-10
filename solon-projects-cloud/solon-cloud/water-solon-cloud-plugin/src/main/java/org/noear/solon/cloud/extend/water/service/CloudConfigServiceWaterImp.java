@@ -41,6 +41,9 @@ public class CloudConfigServiceWaterImp extends TimerTask implements CloudConfig
         return refreshInterval;
     }
 
+    /**
+     * 定时执行，刷新所有的配置（无视本地缓存），然后调用observerMap中的handler的handle方法
+     */
     @Override
     public void run() {
         try {
@@ -58,9 +61,11 @@ public class CloudConfigServiceWaterImp extends TimerTask implements CloudConfig
                 observerMap.forEach((k, v) -> {
                     if (loadGroups.contains(v.group) == false) {
                         loadGroups.add(v.group);
+                        // 刷新配置，无视本地缓存
                         WaterClient.Config.reload(v.group);
                     }
 
+                    // 本地缓存中有，就直接返回，没有则调用water server接口获取tag标签对应的所有配置，放到本地缓存中
                     ConfigM cfg = WaterClient.Config.get(v.group, v.key);
 
                     onUpdateDo(v.group, v.key, cfg, cfg2 -> {
@@ -73,6 +78,9 @@ public class CloudConfigServiceWaterImp extends TimerTask implements CloudConfig
         }
     }
 
+    /**
+     * 拉取配置，并借助configMap实现顺序更新
+     */
     @Override
     public Config pull(String group, String key) {
         if (Utils.isEmpty(group)) {
@@ -84,9 +92,11 @@ public class CloudConfigServiceWaterImp extends TimerTask implements CloudConfig
         }
 
         // 感觉像顺序更新？
+        // 拉取配置（本地缓存中有，就直接返回，没有则调用water server接口获取tag标签对应的所有配置，放到本地缓存中）
         ConfigM cfg = WaterClient.Config.get(group, key);
 
         String cfgKey = group + "/" + key;
+        // configMap的作用是顺序更新
         Config config = configMap.get(cfgKey);
 
         if (config == null) {
@@ -130,7 +140,7 @@ public class CloudConfigServiceWaterImp extends TimerTask implements CloudConfig
 
     /**
      * observer 关注 group 下的某个key
-     * 其实就是将一个 observer 放到 observerMap 中
+     * 其实就是将一个 observer 放到 observerMap 中，key是handler，value是handler&group&Key
      */
     @Override
     public void attention(String group, String key, CloudConfigHandler observer) {
